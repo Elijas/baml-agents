@@ -160,15 +160,12 @@ class BamlModelToBamlSourceConverter(BamlSourceGenerator[T]):
         """
         baml_parts = []
         for model in self._baml_models:
-            model_class_name = model.__class__.__name__
-            if model_class_name == BamlClassModel.__name__:
-                baml_parts.append(
-                    self._generate_class_baml(cast("BamlClassModel", model))
-                )
-            elif model_class_name == BamlEnumModel.__name__:
-                baml_parts.append(self._generate_enum_baml(cast("BamlEnumModel", model)))
+            if isinstance(model, BamlClassModel):
+                baml_parts.append(self._generate_class_baml(model))
+            elif isinstance(model, BamlEnumModel):
+                baml_parts.append(self._generate_enum_baml(model))
             else:
-                raise TypeError(f"Unknown model type: {type(model)}")
+                raise TypeError(f"Unknown model type: {model.__class__.__name__} for {model}")
 
         # Join parts with double newlines for separation between definitions
         return "\n".join(baml_parts)
